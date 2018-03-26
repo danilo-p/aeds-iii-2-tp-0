@@ -103,11 +103,7 @@ int List_insertCell(List *list, Cell *cell, int position) {
          */
         cell->next = current;
     }
-    /* Last position */
-    else if(previous != NULL && current == NULL) {
-        previous->next = cell;
-    }
-    /* The list has 2 or more items */
+    /* The cell is on the last position or the list has 2 or more items */
     else {
         previous->next = cell;
         cell->next = current;
@@ -152,13 +148,9 @@ Cell * List_removeCell(List *list, int position) {
      * First position: current will point to the first cell and previous will be
      * NULL. list->first will be set to the current->next.
      *
-     * Last position: The difference of the last position to the insertCell
-     * function is that here, if the size of the list is x, you cant remove the
-     * cell that is on the position x. On insert funciton, it would be a valid
-     * position, because it would sign that the cell have to be the last cell.
-     * Here, last position means the x-1 position. In this case, current will
-     * be pointing to the last cell of the list. With that, current->next will
-     * be NULL. previous->next have to be set to NULL.
+     * Last position: In this case, current will be pointing to the last cell of
+     * the list. With that, current->next will be NULL. previous->next have to
+     * be set to NULL.
      *
      * Middle position: current and previous will be pointing to cells on the
      * list. previous->next have to point to current->next.
@@ -175,11 +167,7 @@ Cell * List_removeCell(List *list, int position) {
             list->first = current->next;
         }
     }
-    /* Last position */
-    else if(previous != NULL && current != NULL && current->next == NULL) {
-        previous->next = NULL;
-    }
-    /* The list has 2 or more items */
+    /* The cell is on the last position or the list has 2 or more items */
     else {
         previous->next = current->next;
     }
