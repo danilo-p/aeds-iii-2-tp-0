@@ -7,6 +7,8 @@ typedef struct vertex Vertex;
 
 typedef struct graph Graph;
 
+typedef struct dinamic_graph DinamicGraph;
+
 Vertex * Vertex_create(void *data);
 
 void * Vertex_getData(Vertex *vertex);
@@ -17,12 +19,12 @@ void Vertex_destroy(Vertex *vertex);
 
 void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2, int oriented);
 
-Graph * Graph_create();
+DinamicGraph * DinamicGraph_create();
 
-List * Graph_getVertices(Graph *graph);
+List * DinamicGraph_getVertices(DinamicGraph *graph);
 
-void Graph_destroy(Graph *graph);
+void DinamicGraph_destroy(DinamicGraph *graph);
 
-void Graph_insertVertex(Graph *graph, Vertex *vertex);
+void DinamicGraph_insertVertex(DinamicGraph *graph, Vertex *vertex);
 
 #endif

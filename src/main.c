@@ -52,9 +52,9 @@ void Person_destroy(void *person) {
  * @param id The person's id.
  * @return Vertex* The person's vertex.
  */
-Vertex * Graph_searchPersonVertexById(Graph *graph, int id) {
-    List *vertices = Graph_getVertices(graph);
-    for (int i = 0; i < List_getSize(Graph_getVertices(graph)); i += 1) {
+Vertex * DinamicGraph_searchPersonVertexById(DinamicGraph *graph, int id) {
+    List *vertices = DinamicGraph_getVertices(graph);
+    for (int i = 0; i < List_getSize(DinamicGraph_getVertices(graph)); i += 1) {
         Vertex *vertex = (Vertex *) List_getItem(vertices, i);
         Person *person = (Person *) Vertex_getData(vertex);
         if (person->id == id) {
@@ -103,10 +103,10 @@ void Person_spreadMusic(Vertex *vertex) {
  * @param graph The graph
  * @return int How many people liked the music.
  */
-int Graph_countLiked(Graph *graph) {
+int DinamicGraph_countLiked(DinamicGraph *graph) {
     int countLiked = 0;
-    List *vertices = Graph_getVertices(graph);
-    for (int i = 0; i < List_getSize(Graph_getVertices(graph)); i += 1) {
+    List *vertices = DinamicGraph_getVertices(graph);
+    for (int i = 0; i < List_getSize(DinamicGraph_getVertices(graph)); i += 1) {
         Vertex *vertex = (Vertex *) List_getItem(vertices, i);
         Person *person = (Person *) Vertex_getData(vertex);
         if (person->liked) {
@@ -129,20 +129,20 @@ int main() {
     int n, m, i;
     scanf("%d %d", &n, &m);
 
-    Graph *graph = Graph_create();
+    DinamicGraph *graph = DinamicGraph_create();
 
     for (i = 0; i < n; i += 1) {
         int id, age;
         scanf("%d %d", &id, &age);
-        Graph_insertVertex(graph, Vertex_create(Person_create(id, age)));
+        DinamicGraph_insertVertex(graph, Vertex_create(Person_create(id, age)));
     }
 
     for (i = 0; i < m; i += 1) {
         int id1, id2;
         scanf("%d %d", &id1, &id2);
         Vertex_setEdge(
-            Graph_searchPersonVertexById(graph, id1),
-            Graph_searchPersonVertexById(graph, id2),
+            DinamicGraph_searchPersonVertexById(graph, id1),
+            DinamicGraph_searchPersonVertexById(graph, id2),
             0
         );
     }
@@ -150,19 +150,19 @@ int main() {
     int firstId;
     scanf("%d", &firstId);
 
-    Person_spreadMusic(Graph_searchPersonVertexById(graph, firstId));
+    Person_spreadMusic(DinamicGraph_searchPersonVertexById(graph, firstId));
 
-    printf("%d\n", Graph_countLiked(graph));
+    printf("%d\n", DinamicGraph_countLiked(graph));
 
-    List *vertices = Graph_getVertices(graph);
+    List *vertices = DinamicGraph_getVertices(graph);
     while (List_getSize(vertices) > 0) {
-        Vertex *vertex = (Vertex *) List_removeItem(vertices, i);
+        Vertex *vertex = (Vertex *) List_removeItem(vertices, -1);
         Person *person = (Person *) Vertex_getData(vertex);
         Person_destroy(person);
         Vertex_destroy(vertex);
     }
 
-    Graph_destroy(graph);
+    DinamicGraph_destroy(graph);
 
     return 0;
 }

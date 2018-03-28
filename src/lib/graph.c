@@ -2,12 +2,31 @@
 #include "graph.h"
 #include "list.h"
 
+/**
+ * @brief Vertex structure.
+ */
 struct vertex {
+    /** Data stored on the vertex. */
     void *data;
+    /** List with reference for the vertices that this one is related to. */
     List *edges;
 };
 
+/**
+ * @brief Graph structure for graphs that has an already defined number of
+ * vertices. Faster than the dinamic graph.
+ */
 struct graph {
+    /** Array used to store the graph's vertices. */
+    Vertex *vertices;
+};
+
+/**
+ * @brief DinamicGraph structure for graphs that dont have an already defined
+ * number of vertices. Slower than the fixed graph.
+ */
+struct dinamic_graph {
+    /** List used to store the graph's vertices. */
     List *vertices;
 };
 
@@ -92,10 +111,10 @@ void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2, int oriented) {
  * 
  * Complexity: O(1).
  * 
- * @return Graph* A pointer to the created graph.
+ * @return DinamicGraph* A pointer to the created graph.
  */
-Graph * Graph_create() {
-    Graph *graph = (Graph *) malloc(sizeof(Graph));
+DinamicGraph * DinamicGraph_create() {
+    DinamicGraph *graph = (DinamicGraph *) malloc(sizeof(DinamicGraph));
     graph->vertices = List_create();
     return graph;
 }
@@ -108,7 +127,7 @@ Graph * Graph_create() {
  * @param graph The graph.
  * @return List* The graph vertices.
  */
-List * Graph_getVertices(Graph *graph) {
+List * DinamicGraph_getVertices(DinamicGraph *graph) {
     return graph->vertices;
 }
 
@@ -123,8 +142,8 @@ List * Graph_getVertices(Graph *graph) {
  * 
  * @param graph The graph to be destroyied.
  */
-void Graph_destroy(Graph *graph) {
-    List_destroy(Graph_getVertices(graph));
+void DinamicGraph_destroy(DinamicGraph *graph) {
+    List_destroy(DinamicGraph_getVertices(graph));
     free(graph);
 }
 
@@ -136,6 +155,6 @@ void Graph_destroy(Graph *graph) {
  * @param graph The graph.
  * @param vertex The vertex to be inserted.
  */
-void Graph_insertVertex(Graph *graph, Vertex *vertex) {
-    List_insertItem(Graph_getVertices(graph), vertex, -1);
+void DinamicGraph_insertVertex(DinamicGraph *graph, Vertex *vertex) {
+    List_insertItem(DinamicGraph_getVertices(graph), vertex, -1);
 }
