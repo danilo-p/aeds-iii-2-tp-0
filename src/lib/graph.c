@@ -2,7 +2,14 @@
 #include "graph.h"
 #include "list.h"
 
-void emptyDestructor() {}
+struct vertex {
+    void *data;
+    List *edges;
+};
+
+struct graph {
+    List *vertices;
+};
 
 Vertex * Vertex_create(void *data) {
     Vertex *vertex = (Vertex *) malloc(sizeof(Vertex));
@@ -11,14 +18,29 @@ Vertex * Vertex_create(void *data) {
     return vertex;
 }
 
-void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2) {
-    List_insertCell(vertex1->edges, Cell_create(vertex2), vertex1->edges->size);
+void * Vertex_getData(Vertex *vertex) {
+    return vertex->data;
 }
 
-void Vertex_destroy(Vertex *vertex, void (* destructor)(void *)) {
-    destructor(vertex->data);
-    List_destroy(vertex->edges, emptyDestructor);
+List * Vertex_getEdges(Vertex *vertex) {
+    return vertex->edges;
+}
+
+void Vertex_destroy(Vertex *vertex) {
+    List *edges = Vertex_getEdges(vertex);
+    while (List_getSize(edges) > 0) {
+        List_removeItem(edges, -1);
+    }
+    List_destroy(edges);
     free(vertex);
+}
+
+void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2, int oriented) {
+    List_insertItem(Vertex_getEdges(vertex1), vertex2, -1);
+
+    if (!oriented) {
+        List_insertItem(Vertex_getEdges(vertex2), vertex1, -1);
+    }
 }
 
 Graph * Graph_create() {
@@ -27,23 +49,20 @@ Graph * Graph_create() {
     return graph;
 }
 
-void Graph_destroy(Graph *graph, void (* destructor)(void *)) {
-    for (int i = graph->vertices->size; i > 0; i--) {
-        Cell *vertexCell = List_removeCell(graph->vertices, i-1);
-        Vertex *vertex = (Vertex *) vertexCell->data;
-        Vertex_destroy(vertex, destructor);
-        Cell_destroy(vertexCell, emptyDestructor);
+List * Graph_getVertices(Graph *graph) {
+    return graph->vertices;
+}
+
+void Graph_destroy(Graph *graph) {
+    List *vertices = Graph_getVertices(graph);
+    while (List_getSize(vertices) > 0) {
+        Vertex *vertex = (Vertex *) List_removeItem(vertices, -1);
+        Vertex_destroy(vertex);
     }
-    free(graph->vertices);
+    List_destroy(vertices);
     free(graph);
 }
 
 void Graph_insertVertex(Graph *graph, Vertex *vertex) {
-    List_insertCell(graph->vertices, Cell_create(vertex),
-        graph->vertices->size);
-}
-
-Vertex * Graph_searchVertex(Graph *graph, int (* check)(void *)) {
-    Cell *vertexCell = List_searchCell(graph->vertices, check);
-    return (Vertex *) vertexCell->data;
+    List_insertItem(Graph_getVertices(graph), vertex, -1);
 }

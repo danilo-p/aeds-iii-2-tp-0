@@ -3,29 +3,26 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-void emptyDestructor();
+typedef struct vertex Vertex;
 
-typedef struct {
-    void *data;
-    List *edges;
-} Vertex;
-
-typedef struct {
-    List *vertices;
-} Graph;
+typedef struct graph Graph;
 
 Vertex * Vertex_create(void *data);
 
-void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2);
+void * Vertex_getData(Vertex *vertex);
 
-void Vertex_destroy(Vertex *vertex, void (* destructor)(void *));
+List * Vertex_getEdges(Vertex *vertex);
+
+void Vertex_destroy(Vertex *vertex);
+
+void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2, int oriented);
 
 Graph * Graph_create();
 
-void Graph_destroy(Graph *graph, void (* destructor)(void *));
+List * Graph_getVertices(Graph *graph);
+
+void Graph_destroy(Graph *graph);
 
 void Graph_insertVertex(Graph *graph, Vertex *vertex);
-
-Vertex * Graph_searchVertex(Graph *graph, int (* check)(void *));
 
 #endif
