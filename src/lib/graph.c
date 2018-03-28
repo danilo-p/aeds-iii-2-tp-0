@@ -13,24 +13,6 @@ struct vertex {
 };
 
 /**
- * @brief Graph structure for graphs that has an already defined number of
- * vertices. Faster than the dinamic graph.
- */
-struct graph {
-    /** Array used to store the graph's vertices. */
-    Vertex *vertices;
-};
-
-/**
- * @brief DinamicGraph structure for graphs that dont have an already defined
- * number of vertices. Slower than the fixed graph.
- */
-struct dinamic_graph {
-    /** List used to store the graph's vertices. */
-    List *vertices;
-};
-
-/**
  * @brief Creates a new vertex with the given data.
  * 
  * Complexity: O(1).
@@ -107,6 +89,15 @@ void Vertex_setEdge(Vertex *vertex1, Vertex *vertex2, int oriented) {
 }
 
 /**
+ * @brief DinamicGraph structure for graphs that dont have an already defined
+ * number of vertices. Slower than the fixed graph.
+ */
+struct dinamic_graph {
+    /** List used to store the graph's vertices. */
+    List *vertices;
+};
+
+/**
  * @brief Creates a new graph
  * 
  * Complexity: O(1).
@@ -157,4 +148,81 @@ void DinamicGraph_destroy(DinamicGraph *graph) {
  */
 void DinamicGraph_insertVertex(DinamicGraph *graph, Vertex *vertex) {
     List_insertItem(DinamicGraph_getVertices(graph), vertex, -1);
+}
+
+/**
+ * @brief Graph structure for graphs that has an already defined number of
+ * vertices. Faster than the dinamic graph.
+ */
+struct graph {
+    /** Array used to store the graph's vertices pointers. */
+    Vertex **vertices;
+    int verticesNumber;
+};
+
+/**
+ * @brief Creates a new graph
+ * 
+ * Complexity: O(1).
+ *
+ * @param verticesNumber The amount of vertices.
+ * @return Graph* A pointer to the created graph.
+ */
+Graph * Graph_create(int verticesNumber) {
+    Graph *graph = (Graph *) malloc(sizeof(Graph));
+    graph->vertices = (Vertex **) malloc(verticesNumber * sizeof(Vertex *));
+    graph->verticesNumber = verticesNumber;
+    return graph;
+}
+
+/**
+ * @brief Getter for the graph vertices.
+ * 
+ * Complexity: O(1).
+ * 
+ * @param graph The graph.
+ * @return Vertex** The graph vertices.
+ */
+Vertex ** Graph_getVertices(Graph *graph) {
+    return graph->vertices;
+}
+
+/**
+ * @brief Getter for the graph vertices.
+ * 
+ * Complexity: O(1).
+ * 
+ * @param graph The graph.
+ * @return The graph vertices number defined on the creation.
+ */
+int Graph_getVerticesNumber(Graph *graph) {
+    return graph->verticesNumber;
+}
+
+/**
+ * @brief Destroy the given graph.
+ * 
+ * It will destroy the allocated array for the vertices. It assumes that the
+ * creator already destroyied each vertex data.
+ * 
+ * Complexity: O(1).
+ * 
+ * @param graph The graph to be destroyied.
+ */
+void Graph_destroy(Graph *graph) {
+    free(graph->vertices);
+    free(graph);
+}
+
+/**
+ * @brief Inserts a new vertex on the graph.
+ * 
+ * Complexity: O(1).
+ * 
+ * @param graph The graph.
+ * @param vertex The vertex to be inserted.
+ */
+void Graph_insertVertex(Graph *graph, Vertex *vertex, int position) {
+    Vertex **vertices = Graph_getVertices(graph);
+    vertices[position] = vertex;
 }
