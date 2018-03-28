@@ -92,22 +92,19 @@ List * List_create() {
 /**
  * @brief Destroy the given list
  * 
- * Destroy all cells and free the space of the list. Pass the
- * appropriated destructor for the cells data.
+ * Destroy the list. It assumes that all the elements of the list were destroyed
+ * by who was using it, using the List_removeItem until the list is empty.
  *
- * n: the list size
- * Complexity: O(n²). The loop will execute the List_remove "n" times,
- * that is O(n).
+ * Complexity: O(1).
  *
  * @param list The list
- * @param[in] destructor  The destructor for the cells data
  */
 void List_destroy(List *list) {
     free(list);
 }
 
 /**
- * @brief Get the size of a list.
+ * @brief Getter for list size.
  *
  * Complexity: O(1).
  *
@@ -196,7 +193,7 @@ static Cell * List_getCell(List *list, int position) {
  * This function will insert a cell in a determined position of the given list,
  * containing the given data.
  *
- * n: the cell position
+ * n: the item position
  * Complexity: O(n)
  *
  * @param list List to insert the given item
@@ -261,7 +258,7 @@ int List_insertItem(List *list, void *data, int position) {
  * @brief Removes a item from the given list.
  *
  * This function will remove a cell in a determined position of the
- * given list.
+ * given list, returning the cell's data and detroying it.
  *
  * n: the item position.
  * Complexity: O(n).

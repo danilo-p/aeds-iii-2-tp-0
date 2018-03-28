@@ -10,6 +10,15 @@ typedef struct {
     int liked;
 } Person;
 
+/**
+ * @brief Creates a new person with the given id and age
+ * 
+ * Complexity: O(1).
+ * 
+ * @param id The person id.
+ * @param age The person age
+ * @return Person* A pointer to the new person.
+ */
 Person * Person_create(int id, int age) {
     Person *person = (Person *) malloc(sizeof(Person));
     person->id = id;
@@ -19,10 +28,54 @@ Person * Person_create(int id, int age) {
     return person;
 }
 
+/**
+ * @brief Destroys the given person. It simply free the allocated memory to 
+ * store the data.
+ * 
+ * Complexity: O(1).
+ * 
+ * @param person The person to be destroyed.
+ */
 void Person_destroy(void *person) {
     free(person);
 }
 
+/**
+ * @brief Search the person's vertex given the person id.
+ * 
+ * It performs a linear search on the graph vertices list.
+ * 
+ * n: the graph vertices number
+ * Complexity: O(n²).
+ * 
+ * @param graph The graph.
+ * @param id The person's id.
+ * @return Vertex* The person's vertex.
+ */
+Vertex * Graph_searchPersonVertexById(Graph *graph, int id) {
+    List *vertices = Graph_getVertices(graph);
+    for (int i = 0; i < List_getSize(Graph_getVertices(graph)); i += 1) {
+        Vertex *vertex = (Vertex *) List_getItem(vertices, i);
+        Person *person = (Person *) Vertex_getData(vertex);
+        if (person->id == id) {
+            return vertex;
+        }
+    }
+    return NULL;
+}
+
+/**
+ * @brief Spread the music hit given the first person's vertex.
+ * 
+ * It uses the Deep First Search strategy to recursivelly navigate on the graph,
+ * marking the people who liked the music and spreading to it's familly.
+ * 
+ * n: The graph's vertices number
+ * Complexity: O(n³). Given that the DFS strategy has a complexity of O(n²),
+ * this function uses an O(n) function for retrieving the connected vertices.
+ * 
+ * @param vertex The person's first vertex who first listened the music.
+ */
 void Person_spreadMusic(Vertex *vertex) {
     Person *person = (Person *) Vertex_getData(vertex);
     person->listened = 1;
@@ -41,6 +94,15 @@ void Person_spreadMusic(Vertex *vertex) {
     }
 }
 
+/**
+ * @brief Counts how many people liked the music hit.
+ * 
+ * n: the graph's vertices amount.
+ * Complexity: O(n²).
+ * 
+ * @param graph The graph
+ * @return int How many people liked the music.
+ */
 int Graph_countLiked(Graph *graph) {
     int countLiked = 0;
     List *vertices = Graph_getVertices(graph);
@@ -54,18 +116,15 @@ int Graph_countLiked(Graph *graph) {
     return countLiked;
 }
 
-Vertex * Graph_searchPersonVertexById(Graph *graph, int id) {
-    List *vertices = Graph_getVertices(graph);
-    for (int i = 0; i < List_getSize(Graph_getVertices(graph)); i += 1) {
-        Vertex *vertex = (Vertex *) List_getItem(vertices, i);
-        Person *person = (Person *) Vertex_getData(vertex);
-        if (person->id == id) {
-            return vertex;
-        }
-    }
-    return NULL;
-}
-
+/**
+ * @brief Main funcition.
+ * 
+ * It will create and destroy the graph, the vertices and the edges given the
+ * user entries, and it will calculate how many people liked the music hit after
+ * the spread.
+ * 
+ * @return int Program's exit status code.
+ */
 int main() {
     int n, m, i;
     scanf("%d %d", &n, &m);
@@ -96,10 +155,11 @@ int main() {
     printf("%d\n", Graph_countLiked(graph));
 
     List *vertices = Graph_getVertices(graph);
-    for (int i = 0; i < List_getSize(vertices); i += 1) {
-        Vertex *vertex = (Vertex *) List_getItem(vertices, i);
+    while (List_getSize(vertices) > 0) {
+        Vertex *vertex = (Vertex *) List_removeItem(vertices, i);
         Person *person = (Person *) Vertex_getData(vertex);
         Person_destroy(person);
+        Vertex_destroy(vertex);
     }
 
     Graph_destroy(graph);
