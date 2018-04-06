@@ -64,11 +64,7 @@ static Vertex * Graph_binarySearchPersonVertexById(
     int length,
     int id
 ) {
-    if (length == 1) {
-        Person *candidate_person = (Person *) Vertex_getData(vertices[0]);
-        if (candidate_person->id == id) {
-            return vertices[0];
-        }
+    if (length == 0) {
         return NULL;
     }
 
@@ -76,6 +72,9 @@ static Vertex * Graph_binarySearchPersonVertexById(
     Person *middle_person = (Person *) Vertex_getData(vertices[middle]);
     int middle_person_id = middle_person->id;
 
+    if (id == middle_person_id) {
+        return vertices[middle];
+    }
 
     if (id >= middle_person_id) {
         // Right side of the array
