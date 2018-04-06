@@ -9,6 +9,8 @@ Vertex * Vertex_create(void *data);
 
 void * Vertex_getData(Vertex *vertex);
 
+void Vertex_setData(Vertex *vertex, void *data);
+
 List * Vertex_getEdges(Vertex *vertex);
 
 void Vertex_destroy(Vertex *vertex);

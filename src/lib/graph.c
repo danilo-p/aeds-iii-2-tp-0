@@ -40,6 +40,19 @@ void * Vertex_getData(Vertex *vertex) {
 }
 
 /**
+ * @brief Setter for the vertex data.
+ * 
+ * Complexity: O(1).
+ * 
+ * @param vertex The vertex.
+ * @param data The data.
+ * @return void* The vertex data.
+ */
+void Vertex_setData(Vertex *vertex, void *data) {
+    vertex->data = data;
+}
+
+/**
  * @brief Getter for the vertex edges.
  * 
  * Complexity: O(1).
