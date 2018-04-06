@@ -4,6 +4,7 @@
 #define GRAPH_H
 
 typedef struct vertex Vertex;
+
 Vertex * Vertex_create(void *data);
 
 void * Vertex_getData(Vertex *vertex);
