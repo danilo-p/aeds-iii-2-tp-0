@@ -64,6 +64,12 @@ struct list {
     Cell *first;
     /** Pointer to the last item on the list. */
     Cell *last;
+    /**
+     * LRA is a short for "Last Recently Used". It is the last cell that was
+     * acessed on the list, and it"s positions.
+     */
+    Cell *lru_cell;
+    int lru_cell_position;
     /** Used to store the current size of the list. */
     int size;
 };
@@ -84,6 +90,8 @@ List * List_create() {
 
     list->first = NULL;
     list->last = NULL;
+    list->lru_cell = NULL;
+    list->lru_cell_position = 0;
     list->size = 0;
 
     return list;
@@ -128,6 +136,10 @@ int List_getSize(List *list) {
  * @return int The positive position.
  */
 static int List_calculatePosition(int position, int size) {
+    if (size == 0) {
+        position = 0;
+    }
+
     /**
      * If the position is negative, it will be interpreted that the cell have to
      * be inserted on the x position before the end of the list.
@@ -151,40 +163,66 @@ static int List_calculatePosition(int position, int size) {
  * @brief Gets the cell of a list on the given position
  * 
  * n: the cell position
- * Complexity: O(n).
+ * Complexity: O(n) on the worst case. If the caller is iterating
+ * sequentially on the list, the complexity turns into O(1), because the least
+ * recently used position will be used to start the search.
  * 
  * @param list The list
  * @param position The cell position
  * @return Cell* A pointer to the cell. NULL if not found.
  */
 static Cell * List_getCell(List *list, int position) {
-    Cell *current = NULL;
-    int counter;
     position = List_calculatePosition(position, list->size);
 
+    Cell *current_cell = NULL;
+    int current_cell_position = 0;
+
+    int lru_cell_distance = abs(position - list->lru_cell_position);
+    int first_cell_distance = position;
+    int last_cell_distance = abs((list->size - 1) - position);
+
     /*
-     * If the position is more closer to the end, find the position from
-     * backwards. The next step will search the given position over the list
-     * iterating on the cells. Once it arrive to the position, the "current"
-     * pointer will be pointing to the cell that is on the given position.
+     * If the position is more closer to the least recently used cell than the
+     * first and the last cell.
      */
-    if (position > list->size / 2) {
-        counter = list->size - 1;
-        current = list->last;
-        while (counter > position) {
-            current = current->previous;
-            counter--;
+    if (
+        list->lru_cell != NULL &&
+        lru_cell_distance < first_cell_distance &&
+        lru_cell_distance < last_cell_distance
+    ) {
+        current_cell_position = list->lru_cell_position;
+        current_cell = list->lru_cell;
+    }
+    /* If the position is more closer to the last cell. */
+    else if (last_cell_distance < first_cell_distance) {
+        current_cell_position = list->size - 1;
+        current_cell = list->last;
+    }
+    /* If the position is more closer to the first cell. */
+    else {
+        current_cell_position = 0;
+        current_cell = list->first;
+    }
+
+    /* If the we have to search backwards. */
+    if (current_cell_position > position) {
+        while (current_cell_position > position) {
+            current_cell = current_cell->previous;
+            current_cell_position--;
         }
-    } else {
-        counter = 0;
-        current = list->first;
-        while (counter < position) {
-            current = current->next;
-            counter++;
+    }
+    /* If the we have to search forwards. */
+    else {
+        while (current_cell_position < position) {
+            current_cell = current_cell->next;
+            current_cell_position++;
         }
     }
 
-    return current;
+    list->lru_cell = current_cell;
+    list->lru_cell_position = position;
+
+    return current_cell;
 }
 
 /**
