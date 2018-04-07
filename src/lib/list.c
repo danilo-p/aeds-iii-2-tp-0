@@ -347,8 +347,12 @@ void * List_removeItem(List *list, int position) {
         current->next->previous = current->previous;
     }
 
-    list->size -= 1;
+    if (list->lru_cell == current) {
+        list->lru_cell = NULL;
+        list->lru_cell_position = 0;
+    }
 
+    list->size -= 1;
     data = current->data;
     Cell_destroy(current);
 
