@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "person.h"
 #include "graph.h"
 #include "list.h"
@@ -9,7 +10,7 @@
  */
 struct person {
     /** The person id */
-    int id;
+    char *id;
     /** The person age */
     int age;
     /** Flag indicating if the person listened to the music. */
@@ -25,7 +26,7 @@ struct person {
  * @param age The person age
  * @return Person* A pointer to the new person.
  */
-Person * Person_create(int id, int age) {
+Person * Person_create(char *id, int age) {
     Person *person = (Person *) malloc(sizeof(Person));
 
     person->id = id;
@@ -44,6 +45,7 @@ Person * Person_create(int id, int age) {
  * @param person The person to be destroyed.
  */
 void Person_destroy(void *person) {
+    free(((Person *) person)->id);
     free(person);
 }
 
@@ -62,7 +64,7 @@ void Person_destroy(void *person) {
 static Vertex * Graph_binarySearchPersonVertexById(
     Vertex **vertices,
     int length,
-    int id
+    char *id
 ) {
     if (length == 0) {
         return NULL;
@@ -70,13 +72,13 @@ static Vertex * Graph_binarySearchPersonVertexById(
 
     int middle = length / 2;
     Person *middle_person = (Person *) Vertex_getData(vertices[middle]);
-    int middle_person_id = middle_person->id;
+    char *middle_person_id = middle_person->id;
 
-    if (id == middle_person_id) {
+    if (strcmp(id, middle_person_id) == 0) {
         return vertices[middle];
     }
 
-    if (id >= middle_person_id) {
+    if (strcmp(id, middle_person_id) > 0) {
         // Right side of the array
         return Graph_binarySearchPersonVertexById(vertices + middle,
             length - middle, id);
@@ -96,7 +98,7 @@ static Vertex * Graph_binarySearchPersonVertexById(
  * @param id The person's id.
  * @return Vertex* The person's vertex.
  */
-Vertex * Graph_searchPersonVertexById(Graph *graph, int id) {
+Vertex * Graph_searchPersonVertexById(Graph *graph, char *id) {
     return Graph_binarySearchPersonVertexById(Graph_getVertices(graph),
         Graph_getVerticesNumber(graph), id);
 }
@@ -161,24 +163,24 @@ void Graph_destroyPeople(Graph *graph) {
  */
 static void Graph_quickSortVerticesByPersonId (Vertex **vertices, int length) {
     if (length > 1) {
-        int i, j,
-            first = ((Person *) Vertex_getData(vertices[0]))->id,
-            last = ((Person *) Vertex_getData(vertices[length - 1]))->id,
-            middle = ((Person *) Vertex_getData(vertices[length / 2]))->id,
-            pivot = (first > last) ?
-                    (middle > first ? first : middle):
-                    (middle > last ? last : middle);
+        int i, j;
+        char *first = ((Person *) Vertex_getData(vertices[0]))->id;
+        char *last = ((Person *) Vertex_getData(vertices[length - 1]))->id;
+        char *middle = ((Person *) Vertex_getData(vertices[length / 2]))->id;
+        char *pivot = (strcmp(first, last) > 0) ?
+                    (strcmp(middle, first) > 0 ? first : middle):
+                    (strcmp(middle, last) > 0 ? last : middle);
 
         for (i = 0, j = length - 1;; i++, j--) {
             Person *person_i = person_i = (Person *) Vertex_getData(vertices[i]);
             Person *person_j = person_j = (Person *) Vertex_getData(vertices[j]);
 
-            while (person_i->id < pivot) {
+            while (strcmp(person_i->id, pivot) < 0) {
                 i++;
                 person_i = (Person *) Vertex_getData(vertices[i]);
             }
 
-            while (person_j->id > pivot) {
+            while (strcmp(person_j->id, pivot) > 0) {
                 j--;
                 person_j = (Person *) Vertex_getData(vertices[j]);
             }
