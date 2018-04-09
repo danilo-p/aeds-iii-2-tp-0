@@ -11,9 +11,8 @@
  * user entries, and it will calculate how many people liked the music hit after
  * the spread.
  * 
- * Final complexity: O(E*log(V)), being V = "n" and E = "m". The most expensive
- * part is the edges input processing, because of the search that have to be
- * done to find the two persons on the graph vertices.
+ * Final complexity: O(E*V*log(V)), being V = "n" and E = "m". The most
+ * expensive parts are the vertices array sort and edges processing.
  * 
  * @return int Program's exit status code.
  */
@@ -38,17 +37,20 @@ int main() {
     // Complexity for set all edges is O(E*log(V)), being V = "n",and E = "m".
     for (i = 0; i < m; i += 1) {
         scanf("%s %s", id1, id2);
-        Vertex_setEdge(
-            Graph_searchPersonVertexById(graph, id1),
-            Graph_searchPersonVertexById(graph, id2),
-            0
-        );
+        Vertex *vertex1 = Graph_searchPersonVertexById(graph, id1);
+        Vertex *vertex2 = Graph_searchPersonVertexById(graph, id2);
+        if (vertex1 && vertex2) {
+            Vertex_setEdge(vertex1, vertex2, 0);
+        }
     }
 
     char *first_id = (char *) malloc(sizeof(char) * MAX_ID_LENGTH);
     int counter = 0;
     scanf("%s", first_id);
-    Person_spreadMusic(Graph_searchPersonVertexById(graph, first_id), &counter);
+    Vertex *start_vertex = Graph_searchPersonVertexById(graph, first_id);
+    if (start_vertex) {
+        Person_spreadMusic(start_vertex, &counter);
+    }
     printf("%d\n", counter);
 
     free(id1);
