@@ -1,4 +1,4 @@
-# Trabalho Prático 0 - AEDS III
+# Trabalho Prático 0 - AEDS III (2018/01)
 A especificação dada está no arquivo Especificação.pdf. A documentação do trabalho está disponível no arquivo Documentação.pdf.
 
 ## Compilação
